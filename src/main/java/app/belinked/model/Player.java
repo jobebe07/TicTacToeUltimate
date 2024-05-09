@@ -1,9 +1,9 @@
 package app.belinked.model;
 
 public enum Player {
-    CROSS("cross"),
-    CIRCLE("circle"),
-    NONE("none");
+    CROSS("X"),
+    CIRCLE("O"),
+    NONE("-");
 
     private final String id;
 

@@ -41,9 +41,9 @@ public class MiniBoard implements Winnable{
         } // BEGIN VERTICAL CHECKS
         else if(this.at(1) == this.at(4) && this.at(1) == this.at(7) && this.at(1) != Player.NONE) {
             return this.at(1);
-        } else if(this.at(2) == this.at(5) && this.at(1) == this.at(8) && this.at(2) != Player.NONE) {
+        } else if(this.at(2) == this.at(5) && this.at(2) == this.at(8) && this.at(2) != Player.NONE) {
             return this.at(2);
-        } else if(this.at(3) == this.at(6) && this.at(1) == this.at(9) && this.at(3) != Player.NONE) {
+        } else if(this.at(3) == this.at(6) && this.at(3) == this.at(9) && this.at(3) != Player.NONE) {
             return this.at(3);
         } // BEGIN DIAGONAL CHECKS
         else if(this.at(1) == this.at(5) && this.at(1) == this.at(9) && this.at(1) != Player.NONE) {

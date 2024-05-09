@@ -1,25 +1,30 @@
 package app.belinked;
 
 import app.belinked.exception.IllegalMoveException;
+import app.belinked.mcts.MonteCarlo;
 import app.belinked.model.*;
-import app.belinked.service.ChordHelper;
 import app.belinked.service.Game;
+import app.belinked.ui.Display;
 
 public class Main {
     public static void main(String[] args) throws IllegalMoveException {
+        MonteCarlo mcts = new MonteCarlo();
+
         GameState state = Game.start();
+        Player winner = state.getWinner();
 
-        GameState newState = Game.nextState(state, new Move(1, 5));
-            newState = Game.nextState(newState, new Move(5, 1));
-        newState = Game.nextState(newState, new Move(1, 2));
-            newState = Game.nextState(newState, new Move(2, 1));
-        newState = Game.nextState(newState, new Move(1, 8));
-        System.out.println(Game.legalMoves(newState).size());
+        while (winner == Player.NONE) {
 
-        System.out.println(newState.getBoard().at(1, 2));
-        System.out.println(newState.getBoard().at(1, 5));
-        System.out.println(newState.getBoard().at(1, 8));
+            mcts.runSearch(state, 1);
 
-        System.out.println(newState.getWinner());
+            Move play = mcts.bestPlay(state);
+
+            state = Game.nextState(state, play);
+            winner = state.getWinner();
+            Display.board(state.getBoard());
+        }
+
+        System.out.println(winner);
+
     }
 }

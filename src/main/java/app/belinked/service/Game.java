@@ -25,7 +25,7 @@ public class Game {
         newBoard.set(move.getChords(), gameState.getCurrentPlayer());
 
         MiniBoard clickedBoard = newBoard.getMini(move.getChords().getBoardPart());
-        if(clickedBoard.getWinner() != Player.NONE || clickedBoard.isFull()) {
+        if(clickedBoard.getWinner() != null || clickedBoard.isFull()) {
             clickedBoard.lock();
         }
 
@@ -61,5 +61,10 @@ public class Game {
         }
 
         return legalMoves;
+    }
+
+    public static boolean isLegal(GameState state, Move move) {
+        return Game.legalMoves(state).stream()
+                .anyMatch(searchMove -> move.hash().equals(searchMove.hash()));
     }
 }

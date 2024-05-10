@@ -2,11 +2,13 @@ package app.belinked.mcts;
 
 import app.belinked.model.GameState;
 import app.belinked.model.Move;
+import app.belinked.service.Game;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 public class Node {
     private final Move move;
@@ -36,7 +38,7 @@ public class Node {
     }
 
     public Node childNode(Move move) {
-        if (!this.children.containsKey(move.hash())) throw new Error("No such play!");
+        if (!Game.isLegal(this.getGameState(), move)) throw new Error("No such play!");
         Node child = this.children.get(move.hash());
         if (child == null) {
             throw new Error("Child not expanded!");
@@ -47,6 +49,12 @@ public class Node {
         if (!this.children.containsKey(move.hash())) throw new Error("No such play!");
         Node childNode = new Node(this, move, childState, unexpandedMoves);
         this.children.put(move.hash(), childNode);
+
+        Move theUnMove = this.unexpandedMoves.stream().filter(unMove -> unMove.hash().equals(move.hash())).findAny().orElse(null);
+        if(theUnMove != null) {
+            this.unexpandedMoves.remove(theUnMove);
+        }
+
         return childNode;
     }
     public List<Move> getMoves() {
@@ -54,16 +62,13 @@ public class Node {
         for(Node child : children.values()) {
             list.add(child.getMove());
         }
-        return list;
+        return Stream.concat(list.stream(), this.unexpandedMoves.stream()).toList();
     }
     public List<Move> getUnexpandedMoves() {
         return unexpandedMoves;
     }
     public boolean isFullyExpanded() {
-        for(Node child : children.values()) {
-            if(child == null) return false;
-        }
-        return true;
+        return this.unexpandedMoves.isEmpty();
     }
     public boolean isLeaf() {
         return this.children.isEmpty();

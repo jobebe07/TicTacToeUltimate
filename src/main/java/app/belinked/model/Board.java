@@ -63,7 +63,8 @@ public class Board implements Winnable {
     public Player getWinner() {
         MiniBoard mini = new MiniBoard();
         for(int i = 1; i < 10; i++) {
-            mini.set(i, this.getMini(i).getWinner());
+            Player winner = this.getMini(i).getWinner();
+            mini.set(i, (winner == null ? Player.NONE : winner));
         }
         return mini.getWinner();
     }

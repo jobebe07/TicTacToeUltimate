@@ -51,8 +51,8 @@ public class MiniBoard implements Winnable{
         } else if(this.at(3) == this.at(5) && this.at(3) == this.at(7) && this.at(3) != Player.NONE) {
             return this.at(3);
         }
-        // TODO algo impl
-        return Player.NONE;
+        if(this.isFull()) return Player.NONE;
+        return null;
     }
 
     public void set(Chords chords, Player player) {

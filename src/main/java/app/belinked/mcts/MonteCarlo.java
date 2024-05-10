@@ -5,6 +5,7 @@ import app.belinked.model.GameState;
 import app.belinked.model.Move;
 import app.belinked.model.Player;
 import app.belinked.service.Game;
+import app.belinked.ui.Display;
 
 import java.util.*;
 
@@ -34,7 +35,7 @@ public class MonteCarlo {
         while (System.currentTimeMillis() < end) {
             Node node = this.select(state);
             Player winner = node.getGameState().getWinner();
-            if (!node.isLeaf() && winner == Player.NONE) {
+            if (!node.isLeaf() && winner == null) {
                 node = this.expand(node);
                 winner = this.simulate(node);
             }
@@ -65,6 +66,7 @@ public class MonteCarlo {
         Node node = this.nodes.get(state.hash());
         while(node.isFullyExpanded() && !node.isLeaf()) {
             List<Move> plays = node.getMoves();
+            if(plays.isEmpty()) throw new Error("No legal move from node");
             Move bestPlay = null;
             double bestUCB1 = Double.NEGATIVE_INFINITY;
             for (Move play : plays) {
@@ -74,6 +76,15 @@ public class MonteCarlo {
                     bestPlay = play;
                     bestUCB1 = childUCB1;
                 }
+            }
+            if(bestPlay == null) {
+                Display.board(node.getGameState());
+                for(Move play : plays) {
+                    System.out.println(play.hash());
+                    Node childNode = node.childNode(play);
+                    System.out.println(node.getPlays() + ":" + childNode.getPlays());
+                }
+                System.out.println(node.getParent().getPlays());
             }
             node = node.childNode(bestPlay);
         }
@@ -98,7 +109,7 @@ public class MonteCarlo {
     public Player simulate(Node node) {
         GameState state = node.getGameState();
         Player winner = state.getWinner();
-        while (winner == Player.NONE) {
+        while (winner == null) {
             List<Move> plays = Game.legalMoves(state);
             if(plays.isEmpty()) break;
 
@@ -114,10 +125,11 @@ public class MonteCarlo {
         return winner;
     }
     public void backpropagate(Node node, Player winner) {
+
         while (node != null) {
             node.setPlays(node.getPlays()+1);
             // Parent's choice
-            if (node.getGameState().getCurrentPlayer() != winner) {
+            if (node.getGameState().getCurrentPlayer() != winner && winner != null) {
                 node.setWins(node.getWins()+1);
             }
             node = node.getParent();

@@ -1,9 +1,11 @@
 package app.belinked.ui;
 
 import app.belinked.model.Board;
+import app.belinked.model.GameState;
 
 public class Display {
-    public static void board(Board board) {
+    public static void board(GameState state) {
+        Board board = state.getBoard();
         System.out.println("-------------------------------------");
         System.out.printf("| %s + %s + %s | %s + %s + %s | %s + %s + %s |%n",
                 board.at(1, 1).getId(), board.at(1, 2).getId(), board.at(1, 3).getId(),
@@ -43,6 +45,7 @@ public class Display {
                 board.at(7, 7).getId(), board.at(7, 8).getId(), board.at(7, 9).getId(),
                 board.at(8, 7).getId(), board.at(8, 8).getId(), board.at(8, 9).getId(),
                 board.at(9, 7).getId(), board.at(9, 8).getId(), board.at(9, 9).getId());
-        System.out.println("-------------------------------------");
+        System.out.printf("----------------NEXT:%s---------------%n", state.getNext());
+
     }
 }

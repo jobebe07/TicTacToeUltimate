@@ -11,7 +11,7 @@ import java.util.*;
 
 public class MonteCarlo {
     private Map<String, Node> nodes;
-    private int exploreParameter;
+    private final int exploreParameter;
 
     public MonteCarlo(int exploreParameter) {
         this.nodes = new HashMap<>(); // state hash => node
@@ -20,12 +20,16 @@ public class MonteCarlo {
     public MonteCarlo() {
         this(2);
     }
+
+    public int getChildCount() {
+        return nodes.size();
+    }
     
     public void makeNode(GameState state) {
-        if(!this.nodes.containsKey(state.hash())) {
+        if(!this.nodes.containsKey(state.getUUID())) {
             List<Move> unexpandedMoves = new ArrayList<>(Game.legalMoves(state));
             Node node = new Node(null, null, state, unexpandedMoves);
-            this.nodes.put(state.hash(), node);
+            this.nodes.put(state.getUUID(), node);
         }
     }
 
@@ -43,27 +47,32 @@ public class MonteCarlo {
         }
     }
 
-    public Move bestPlay(GameState state) {
+    public Node bestNode(GameState state) {
         this.makeNode(state);
         // If not all children are expanded, not enough information
-        if (!this.nodes.get(state.hash()).isFullyExpanded())
+        if (!this.nodes.get(state.getUUID()).isFullyExpanded())
             throw new Error("Not enough information!");
-        Node node = this.nodes.get(state.hash());
+        Node node = this.nodes.get(state.getUUID());
         List<Move> allPlays = node.getMoves();
         Move bestPlay = null;
+        Node bestNode = null;
         double max = Double.NEGATIVE_INFINITY;
         for (Move play : allPlays) {
             Node childNode = node.childNode(play);
             if (childNode.getPlays() > max) {
                 bestPlay = play;
                 max = childNode.getPlays();
+                bestNode = childNode;
             }
         }
-        return bestPlay;
+        return bestNode;
+    }
+    public Move bestPlay(GameState state) {
+        return this.bestNode(state).getMove();
     }
 
     public Node select(GameState state) {
-        Node node = this.nodes.get(state.hash());
+        Node node = this.nodes.get(state.getUUID());
         while(node.isFullyExpanded() && !node.isLeaf()) {
             List<Move> plays = node.getMoves();
             if(plays.isEmpty()) throw new Error("No legal move from node");
@@ -102,7 +111,7 @@ public class MonteCarlo {
         }
         List<Move> childUnexpandedPlays = Game.legalMoves(childState);
         Node childNode = node.expand(play, childState, childUnexpandedPlays);
-        this.nodes.put(childState.hash(), childNode);
+        this.nodes.put(childState.getUUID(), childNode);
         return childNode;
     }
 

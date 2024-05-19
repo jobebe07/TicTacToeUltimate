@@ -17,21 +17,24 @@ public class Game {
                 .filter(searchMove -> move.hash().equals(searchMove.hash()))
                 .findAny()
                 .orElseThrow(() -> new IllegalMoveException("Move [" + move.hash() + "] is illegal for this state (" + gameState.getNext() + ")"));
-
+        // * add move to history
         List<Move> newHistory = new ArrayList<>(gameState.getMoveHistory());
         newHistory.add(move);
-
+        // * set move on board
         Board newBoard = new Board(gameState.getBoard());
         newBoard.set(move.getChords(), gameState.getCurrentPlayer());
-
+        // * lock board if full
         MiniBoard clickedBoard = newBoard.getMini(move.getChords().getBoardPart());
         if(clickedBoard.getWinner() != null || clickedBoard.isFull()) {
             clickedBoard.lock();
         }
-
+        // * set new player
         Player newPlayer = (gameState.getCurrentPlayer() == Player.CROSS ? Player.CIRCLE : Player.CROSS);
+        // * set next
+        int next = ChordHelper.chordsToNum(move.getChords().getFieldPart());
+        if(newBoard.getMini(next).isLocked()) next = 0;
 
-        return new GameState(newHistory, newBoard, newPlayer);
+        return new GameState(newHistory, newBoard, newPlayer, next);
     }
 
     public static List<Move> legalMoves(GameState gameState) {

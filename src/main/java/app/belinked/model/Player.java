@@ -14,4 +14,13 @@ public enum Player {
     public String getId() {
         return this.id;
     }
+
+    public static Player valueOfID(String id) {
+        for (Player p : values()) {
+            if (p.id.equals(id)) {
+                return p;
+            }
+        }
+        return null;
+    }
 }

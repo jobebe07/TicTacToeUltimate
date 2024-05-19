@@ -46,6 +46,6 @@ public class Display {
                 board.at(8, 7).getId(), board.at(8, 8).getId(), board.at(8, 9).getId(),
                 board.at(9, 7).getId(), board.at(9, 8).getId(), board.at(9, 9).getId());
         System.out.printf("----------------NEXT:%s---------------%n", state.getNext());
-
+        System.out.println(state.generateHash());
     }
 }
